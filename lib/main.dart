@@ -5,8 +5,6 @@ import 'package:flutter_application_1/screen/home_scree.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'screen/weather_page.dart';
-
 void main() async {
   await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();

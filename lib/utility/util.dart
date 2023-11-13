@@ -69,8 +69,7 @@ Future<void> addCityCard(BuildContext context, WidgetRef ref,
                                       .toLowerCase()
                                       .trim());
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Something Went Wrong!!')));
+                          showSnack(context, 'Something went Wrong');
                         }
                         textEditingController.clear();
                         Navigator.pop(context);

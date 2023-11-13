@@ -23,6 +23,7 @@ class CitiesWeatherScreen extends ConsumerStatefulWidget {
 
 class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
   TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
 
   late Future<List<WeatherCardModel>> weatheCardModelList;
 
@@ -33,6 +34,7 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
   @override
   void dispose() {
     _textEditingController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -44,11 +46,12 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
     super.initState();
   }
 
+  bool _searchOpen = false;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      // resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Container(
@@ -75,25 +78,66 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
               padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
               child: SafeArea(
                 child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Saved Locations',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.search,
-                            color: Colors.white,
-                            size: 32,
+                    _searchOpen
+                        ? Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            alignment: Alignment.center,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (value) {},
+                              cursorColor: Colors.purple,
+                              textAlignVertical: TextAlignVertical.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                              maxLength: 20,
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                counterText: '',
+                                border: InputBorder.none,
+                                suffix: InkWell(
+                                  onTap: () =>
+                                      setState(() => _searchOpen = false),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Saved Locations',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _searchOpen = true;
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                     FutureBuilder<List<WeatherCardModel>?>(
                       future: weatheCardModelList,
                       builder: (context, snapshot) {
