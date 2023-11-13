@@ -103,7 +103,7 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
                     setState(() {
                       weatherData = ref
                           .read(weatherServiceProvider)
-                          .getWeatherData(context, 'kolkata');
+                          .getWeatherData(context, weather.cityName);
                     });
                   },
                   child: ListView(children: [
@@ -152,7 +152,8 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
                                     PageRouteBuilder(
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
-                                          const CitiesWeatherScreen(),
+                                          CitiesWeatherScreen(
+                                              cityName: weather.cityName),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
                                         const begin = Offset(1.0, 0.0);

@@ -13,7 +13,8 @@ import '../utility/util.dart';
 import '../widgets/weather_card.dart';
 
 class CitiesWeatherScreen extends ConsumerStatefulWidget {
-  const CitiesWeatherScreen({super.key});
+  final String cityName;
+  const CitiesWeatherScreen({super.key, required this.cityName});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -37,9 +38,9 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    weatheCardModelList =
-        ref.read(weatherServiceProvider).getWeatherCards(context, 'Kolkata');
+    weatheCardModelList = ref
+        .read(weatherServiceProvider)
+        .getWeatherCards(context, widget.cityName);
     super.initState();
   }
 
@@ -122,6 +123,11 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(30),
+                                    onLongPress: () {
+                                      weatherList.removeAt(index);
+                                      setState(() {});
+                                      showSnack(context, 'Card Deleted..');
+                                    },
                                     onTap: () {
                                       Navigator.push(
                                           context,

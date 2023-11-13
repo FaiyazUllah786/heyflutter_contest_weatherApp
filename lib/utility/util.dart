@@ -11,6 +11,7 @@ import '../widgets/glassmorphis.dart';
 Future<void> addCityCard(BuildContext context, WidgetRef ref,
     TextEditingController textEditingController) async {
   showModalBottomSheet(
+    isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
     builder: (context) {
@@ -18,94 +19,108 @@ Future<void> addCityCard(BuildContext context, WidgetRef ref,
         color: Colors.black,
         start: 0.3,
         end: 0.0,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: TextField(
-                controller: textEditingController,
-                onChanged: (value) {
-                  textEditingController.text = value;
-                },
-                maxLength: 20,
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Enter city name...',
-                  hintStyle: TextStyle(
+        child: Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 18,
+              right: 18,
+              top: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextField(
+                  autofocus: true,
+                  maxLength: 20,
+                  controller: textEditingController,
+                  onChanged: (value) {
+                    textEditingController.text = value;
+                  },
+                  style: const TextStyle(
                     fontSize: 20,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Enter city name...',
+                    hintStyle: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    splashColor: Colors.amber,
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () async {
-                      if (textEditingController.text.isNotEmpty) {
-                        await ref.read(weatherServiceProvider).getWeatherCards(
-                            context,
-                            textEditingController.text.toLowerCase().trim());
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Something Went Wrong!!')));
-                      }
-                      textEditingController.clear();
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 40,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade300,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Text(
-                        'Add',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      splashColor: Colors.amber,
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () async {
+                        if (textEditingController.text.isNotEmpty) {
+                          await ref
+                              .read(weatherServiceProvider)
+                              .getWeatherCards(
+                                  context,
+                                  textEditingController.text
+                                      .toLowerCase()
+                                      .trim());
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Something Went Wrong!!')));
+                        }
+                        textEditingController.clear();
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 40,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade300,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Text(
+                          'Add',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  InkWell(
-                    splashColor: Colors.amber,
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 40,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade300,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
+                    const SizedBox(width: 10),
+                    InkWell(
+                      splashColor: Colors.amber,
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 40,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade300,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },
