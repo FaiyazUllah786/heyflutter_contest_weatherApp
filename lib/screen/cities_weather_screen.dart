@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_application_1/model/weather_card_model.dart';
+import 'package:flutter_application_1/screen/add_weather_cards.dart';
 import 'package:flutter_application_1/screen/weather_page.dart';
 
 import 'package:flutter_application_1/service/weather_service.dart';
@@ -47,6 +48,8 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
   }
 
   bool _searchOpen = false;
+  List<WeatherCardModel> weatherList = [];
+  List<WeatherCardModel> searchList = [];
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -54,21 +57,29 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
+          // Container(
+          //   height: size.height,
+          //   width: size.width,
+          //   decoration: const BoxDecoration(
+          //     gradient: LinearGradient(
+          //       begin: Alignment.topCenter,
+          //       end: Alignment.bottomCenter,
+          //       colors: [
+          //         Color.fromRGBO(57, 26, 73, 1),
+          //         Color.fromRGBO(48, 29, 92, 1),
+          //         Color.fromRGBO(38, 33, 113, 1),
+          //         Color.fromRGBO(48, 29, 92, 1),
+          //         Color.fromRGBO(57, 26, 73, 1),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Container(
             height: size.height,
             width: size.width,
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color.fromRGBO(57, 26, 73, 1),
-                  Color.fromRGBO(48, 29, 92, 1),
-                  Color.fromRGBO(38, 33, 113, 1),
-                  Color.fromRGBO(48, 29, 92, 1),
-                  Color.fromRGBO(57, 26, 73, 1),
-                ],
-              ),
+              image: DecorationImage(
+                  image: AssetImage('assets/minimal.jpg'), fit: BoxFit.cover),
             ),
           ),
           Container(
@@ -87,28 +98,44 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                             decoration: BoxDecoration(
                               border: Border.all(
                                 width: 2,
-                                color: Colors.grey,
+                                color: Colors.white,
                               ),
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: TextField(
                               controller: _searchController,
-                              onChanged: (value) {},
-                              cursorColor: Colors.purple,
+                              onChanged: (value) {
+                                print(weatherList.length);
+                                final searchList = weatherList
+                                    .where((element) => element.cityName
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase()))
+                                    .toList();
+                                setState(() {
+                                  weatherList = searchList;
+                                  print(weatherList.length);
+                                });
+                              },
+                              cursorColor: Colors.white,
                               textAlignVertical: TextAlignVertical.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500),
                               maxLength: 20,
                               autofocus: true,
                               decoration: InputDecoration(
+                                hintText: 'Search....',
+                                hintStyle: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white.withOpacity(0.7),
+                                ),
                                 counterText: '',
                                 border: InputBorder.none,
                                 suffix: InkWell(
                                   onTap: () =>
                                       setState(() => _searchOpen = false),
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.close,
                                     color: Colors.white,
                                   ),
@@ -128,6 +155,7 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                                 onPressed: () {
                                   setState(() {
                                     _searchOpen = true;
+                                    searchList = weatherList;
                                   });
                                 },
                                 icon: const Icon(
@@ -151,7 +179,10 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                             child: Lottie.asset('assets/error_loader.json'),
                           );
                         }
-                        List<WeatherCardModel> weatherList = snapshot.data!;
+                        _searchOpen
+                            ? weatherList = searchList
+                            : weatherList = snapshot.data!;
+
                         return Expanded(
                           child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
@@ -220,7 +251,12 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(30),
                     onTap: () async {
-                      await addCityCard(context, ref, _textEditingController);
+                      // await addCityCard(context, ref, _textEditingController);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddWeatherCards(),
+                          ));
                       setState(() {});
                     },
                     child: Container(

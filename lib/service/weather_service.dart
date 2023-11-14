@@ -7,6 +7,7 @@ import 'package:flutter_application_1/model/weather_card_model.dart';
 import 'package:flutter_application_1/model/weather_forcast_model.dart';
 import 'package:flutter_application_1/model/weather_model.dart';
 import 'package:flutter_application_1/screen/cities_weather_screen.dart';
+import 'package:flutter_application_1/utility/util.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as https;
@@ -40,7 +41,7 @@ class WeatherService {
 
   // Map<String,dynamic> weatherData;
 
-  Future<Map<String, dynamic>> getWeatherData(
+  Future<Map<String, dynamic>?> getWeatherData(
       BuildContext context, String cityName) async {
     Weather? weather;
     String cityImage = '';
@@ -70,6 +71,10 @@ class WeatherService {
         List<dynamic> cityImages = await getImagesCity(
             '${weatherModel.cityName} ${weatherModel.mianCondition} $day');
         cityImage = cityImages[Random().nextInt(cityImages.length - 1)];
+        return {'weather': weather, 'cityImage': cityImage};
+      } else {
+        showSnack(context, 'No Weather Data Found.Please try again.');
+        throw 'error';
       }
     } catch (e) {
       print(e.toString());
@@ -77,7 +82,8 @@ class WeatherService {
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
 
-    return {'weather': weather, 'cityImage': cityImage};
+    // return {'weather': weather, 'cityImage': cityImage}
+    return null;
   }
 
   Future<List<WeatherForeCastModel>> getWeatherForecastData(
@@ -146,5 +152,26 @@ class WeatherService {
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
     return _weatherCardModelList;
+  }
+
+  //queries for cities
+  List<dynamic> _cities = [];
+  Future<List<dynamic>> searchCities(String query) async {
+    try {
+      final response = await https.get(
+        Uri.parse(
+            'http://api.geonames.org/searchJSON?name=$query&maxRows=20&username=faiyaz_geoname'),
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> cityList = data['geonames'];
+        _cities = cityList;
+        return _cities;
+      }
+    } catch (e) {
+      print('failed to load cities');
+      throw Exception('Failed to load cities');
+    }
+    return _cities;
   }
 }

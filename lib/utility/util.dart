@@ -26,12 +26,12 @@ Future<void> addCityCard(BuildContext context, WidgetRef ref,
               right: 18,
               top: 18),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            // mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: TextField(
-                  autofocus: true,
+                  // autofocus: true,
                   maxLength: 20,
                   controller: textEditingController,
                   onChanged: (value) {
@@ -49,6 +49,12 @@ Future<void> addCityCard(BuildContext context, WidgetRef ref,
                     ),
                   ),
                 ),
+              ),
+              FutureBuilder(
+                future: null,
+                builder: (context, snapshot) {
+                  return SizedBox();
+                },
               ),
               Padding(
                 padding:
@@ -145,7 +151,7 @@ Future<String?> _getLocation() async {
     print('getlocation');
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
-      timeLimit: Duration(seconds: 3),
+      timeLimit: Duration(seconds: 5),
     );
     print('fetched');
 
@@ -157,6 +163,7 @@ Future<String?> _getLocation() async {
     return '${place.locality}';
   } catch (e) {
     print('Location error!!');
+    throw 'error';
   }
 }
 
@@ -166,7 +173,7 @@ void showSnack(BuildContext context, String text) {
       behavior: SnackBarBehavior.floating,
       elevation: 10,
       backgroundColor: Colors.red,
-      margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+      margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       content: Text(
         text,

@@ -46,7 +46,7 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
     }
   }
 
-  late Future<Map<String, dynamic>> weatherData;
+  late Future<Map<String, dynamic>?> weatherData;
 
   void fetchWeather() async {
     print("${widget.cityName} weather Page Widget");
@@ -66,36 +66,70 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.grey,
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<Map<String, dynamic>?>(
           future: ref
               .watch(weatherServiceProvider)
               .getWeatherData(context, widget.cityName),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Lottie.asset('assets/loadingLocation.json'),
+              return Stack(
+                children: [
+                  SizedBox(
+                    height: size.height,
+                    width: size.width,
+                    child: Image.asset(
+                      'assets/minimal.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Center(
+                    child: Lottie.asset('assets/loadingLocation.json'),
+                  ),
+                ],
               );
             } else if (snapshot.hasError) {
               return Center(
                 child: Lottie.asset('assets/error_loader.json'),
               );
             } else if (snapshot.data == null) {
-              return Center(
-                child: Lottie.asset('assets/location_not_found.json'),
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset('assets/location_not_found.json'),
+                  Text(
+                      'Sorry No Weather Data Available For ${widget.cityName}'),
+                ],
               );
             }
             Map<String, dynamic> weatherMap = snapshot.data!;
+            // if (weatherMap['weather'] == null)
+            //   return Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       Lottie.asset('assets/location_not_found.json'),
+            //       Text(
+            //           'Sorry No Weather Data Available For ${widget.cityName}'),
+
+            //     ],
+            //   );
             Weather weather = weatherMap['weather'];
             String cityImage = weatherMap['cityImage'];
 
             return Stack(
               children: [
                 SizedBox(
+                    height: size.height,
+                    width: size.width,
+                    child: Image.asset(
+                      'assets/minimal.jpg',
+                      fit: BoxFit.cover,
+                    )),
+                SizedBox(
                   height: size.height,
                   width: size.width,
-                  child: Image.network(
-                    cityImage,
-                    fit: BoxFit.cover,
+                  child: ImageBuilderWidget(
+                    imageUrl: cityImage,
+                    size: size,
                   ),
                 ),
                 LiquidPullToRefresh(
@@ -331,6 +365,30 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
               ],
             );
           }),
+    );
+  }
+}
+
+class ImageBuilderWidget extends StatelessWidget {
+  Size size;
+  final String imageUrl;
+  ImageBuilderWidget({super.key, required this.imageUrl, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: NetworkImage(imageUrl),
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return SizedBox(
+            height: size.height,
+            width: size.width,
+            child: Image.asset(
+              'assets/minimal.jpg',
+              fit: BoxFit.cover,
+            ));
+      },
     );
   }
 }
