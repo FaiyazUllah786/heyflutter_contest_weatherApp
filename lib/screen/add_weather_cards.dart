@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screen/cities_weather_screen.dart';
 import 'package:flutter_application_1/screen/weather_page.dart';
 import 'package:flutter_application_1/service/weather_service.dart';
+import 'package:flutter_application_1/utility/util.dart';
 import 'package:flutter_application_1/widgets/glassmorphis.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -66,6 +67,27 @@ class _AddWeatherCardsState extends ConsumerState<AddWeatherCards> {
                         color: Colors.white.withOpacity(0.5),
                       ),
                       prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      suffixIcon: InkWell(
+                          onTap: () async {
+                            String? location =
+                                await getCurrentPosition(context);
+                            showSnack(
+                                context, 'Fetching you location.please wait!!');
+                            if (location == null) return;
+                            final data = await ref
+                                .read(weatherServiceProvider)
+                                .getWeatherData(context, location);
+                            if (data != null) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    WeatherPage(cityName: location),
+                              ));
+                            }
+                          },
+                          child: Icon(
+                            Icons.location_on_rounded,
+                            color: Colors.cyanAccent,
+                          )),
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {

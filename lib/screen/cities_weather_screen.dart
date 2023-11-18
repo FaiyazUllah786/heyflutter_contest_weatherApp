@@ -133,8 +133,10 @@ class _CitiesWeatherScreenState extends ConsumerState<CitiesWeatherScreen> {
                                 counterText: '',
                                 border: InputBorder.none,
                                 suffix: InkWell(
-                                  onTap: () =>
-                                      setState(() => _searchOpen = false),
+                                  onTap: () => setState(() {
+                                    _searchOpen = false;
+                                    _searchController.clear();
+                                  }),
                                   child: const Icon(
                                     Icons.close,
                                     color: Colors.white,

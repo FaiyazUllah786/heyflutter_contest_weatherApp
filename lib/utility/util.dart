@@ -132,41 +132,6 @@ Future<void> addCityCard(BuildContext context, WidgetRef ref,
   );
 }
 
-Future<String?> checkLocationPermission() async {
-  var status = await Permission.location.status;
-  print("${status} checkLocationPermission");
-  if (status.isGranted) {
-    print("fetching location");
-    return _getLocation();
-  } else {
-    status = await Permission.location.request();
-    if (status.isGranted) {
-      return _getLocation();
-    }
-  }
-}
-
-Future<String?> _getLocation() async {
-  try {
-    print('getlocation');
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-      timeLimit: Duration(seconds: 5),
-    );
-    print('fetched');
-
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-
-    Placemark place = placemarks.first;
-
-    return '${place.locality}';
-  } catch (e) {
-    print('Location error!!');
-    throw 'error';
-  }
-}
-
 void showSnack(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -181,4 +146,50 @@ void showSnack(BuildContext context, String text) {
       ),
     ),
   );
+}
+
+Future<bool> _handleLocationPermission(BuildContext context) async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  // if (!serviceEnabled) {
+  //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //       content: Text(
+  //           'Location services are disabled. Please enable the services')));
+  //   return false;
+  // }
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')));
+      return false;
+    }
+  }
+  if (permission == LocationPermission.deniedForever) {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            'Location permissions are permanently denied, we cannot request permissions.')));
+    return false;
+  }
+  return true;
+}
+
+Future<String?> getCurrentPosition(BuildContext context) async {
+  final hasPermission = await _handleLocationPermission(context);
+  if (!hasPermission) return null;
+  Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.low,
+      timeLimit: const Duration(seconds: 25));
+  List<Placemark> placemarks =
+      await placemarkFromCoordinates(position.latitude, position.longitude);
+
+  Placemark place = placemarks.first;
+
+  print(place.locality);
+  print(place.isoCountryCode);
+
+  return '${place.locality},${place.isoCountryCode}';
 }

@@ -61,6 +61,8 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
     fetchWeather();
   }
 
+  bool cityImageFetched = false;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -83,7 +85,7 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
                     ),
                   ),
                   Center(
-                    child: Lottie.asset('assets/loadingLocation.json'),
+                    child: Lottie.asset('assets/loading.json'),
                   ),
                 ],
               );
@@ -114,24 +116,48 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
             //   );
             Weather weather = weatherMap['weather'];
             String cityImage = weatherMap['cityImage'];
+            cityImageFetched = true;
 
             return Stack(
               children: [
-                SizedBox(
-                    height: size.height,
-                    width: size.width,
-                    child: Image.asset(
-                      'assets/minimal.jpg',
-                      fit: BoxFit.cover,
-                    )),
-                SizedBox(
-                  height: size.height,
-                  width: size.width,
-                  child: ImageBuilderWidget(
-                    imageUrl: cityImage,
-                    size: size,
-                  ),
-                ),
+                AnimatedCrossFade(
+                    sizeCurve: Curves.linear,
+                    firstCurve: Curves.linear,
+                    secondCurve: Curves.linear,
+                    firstChild: SizedBox(
+                        height: size.height,
+                        width: size.width,
+                        child: Image.asset(
+                          'assets/minimal.jpg',
+                          fit: BoxFit.cover,
+                        )),
+                    secondChild: SizedBox(
+                      height: size.height,
+                      width: size.width,
+                      child: ImageBuilderWidget(
+                        imageUrl: cityImage,
+                        size: size,
+                      ),
+                    ),
+                    crossFadeState: cityImageFetched
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: Duration(milliseconds: 1500)),
+                // SizedBox(
+                //     height: size.height,
+                //     width: size.width,
+                //     child: Image.asset(
+                //       'assets/minimal.jpg',
+                //       fit: BoxFit.cover,
+                //     )),
+                // SizedBox(
+                //   height: size.height,
+                //   width: size.width,
+                //   child: ImageBuilderWidget(
+                //     imageUrl: cityImage,
+                //     size: size,
+                //   ),
+                // ),
                 LiquidPullToRefresh(
                   onRefresh: () async {
                     setState(() {
@@ -150,22 +176,24 @@ class WeatherPageState extends ConsumerState<WeatherPage> {
                             children: [
                               IconButton(
                                 onPressed: () async {
-                                  print('finding location');
-                                  final city = await checkLocationPermission();
-                                  print('location fetch');
-                                  if (city != null) {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              WeatherPage(cityName: city),
-                                        ));
-                                  } else {
-                                    print('location found');
-                                    showSnack(
-                                        context, 'Failed to find location');
-                                  }
-                                  print('something is not right');
+                                  // print('finding location');
+                                  // final city = await checkLocationPermission();
+                                  // print('location fetch');
+                                  // if (city != null) {
+                                  //   Navigator.pushReplacement(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //         builder: (context) =>
+                                  //             WeatherPage(cityName: city),
+                                  //       ));
+                                  // } else {
+                                  //   print('location found');
+                                  //   showSnack(
+                                  //       context, 'Failed to find location');
+                                  // }
+                                  // print('something is not right');
+                                  print('helellesjd');
+                                  getCurrentPosition(context);
                                 },
                                 icon: const Icon(
                                   Icons.location_on_rounded,

@@ -18,25 +18,50 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    checkLocation = checkLocationPermission();
+    checkLocation = getCurrentPosition(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: FutureBuilder(
-          future: checkLocation,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: Lottie.asset('assets/loadingLocation.json'));
-            } else if (snapshot.hasError) {
-              return AddWeatherCards();
-            } else if (snapshot.data == null) {
-              showSnack(context, 'Location not found.,\nplease try again!!');
-              return AddWeatherCards();
-            }
-            return WeatherPage(cityName: snapshot.data!);
-          }),
+      body: Stack(
+        children: [
+          SizedBox(
+              height: size.height,
+              width: size.width,
+              child: Image.asset(
+                'assets/minimal.jpg',
+                fit: BoxFit.cover,
+              )),
+          FutureBuilder(
+              future: checkLocation,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset('assets/loadingLocation.json'),
+                      Text(
+                        'Fetching your Location.....',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white),
+                      ),
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return AddWeatherCards();
+                } else if (snapshot.data == null) {
+                  showSnack(
+                      context, 'Location not found.,\nplease try again!!');
+                  return AddWeatherCards();
+                }
+                return WeatherPage(cityName: snapshot.data!);
+              }),
+        ],
+      ),
     );
   }
 }
