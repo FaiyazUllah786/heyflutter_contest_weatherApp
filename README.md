@@ -1,16 +1,13 @@
-# flutter_application_1
-
-A new Flutter project.
+# hey flutter contest 2
+# Weather App
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# 1.This app uses geocoder to fetch user current location
+# 2.Weather Page(/home) shows weather data fetched from OpenWeatherMap.api according to the city.
+# 3.background image of the home page fetched from UnSplash.api according to -
+# City Name, Weather condition and City Time(Day/Night)
+# Swipe down to refresh to fetch latest weather data along with new images.
+## 2nd page
+# you can add cities card according to you preference but it not store in local storage.
+# entire app use lottie animation.
+# That's All..happy coding
